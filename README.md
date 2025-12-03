@@ -1,314 +1,61 @@
 # Binary Market Strategies Engine
 
-**Quant-Level Implementation for Polymarket & Kalshi**
-
-A sophisticated trading engine that identifies and exploits pricing inefficiencies in binary prediction markets using statistical analysis, Bayesian probability estimation, and quantitative risk management.
-
----
-
 ## Project Summary
+This engine implements the **"Buy No Early"** strategy for **Polymarket** and **Kalshi** binary prediction markets. It identifies pricing inefficiencies in newly-listed (<20 minutes old) markets where retail traders overbet on sensational "Yes" outcomes, using Bayesian probability estimation and Kelly Criterion position sizing to capture the correction.
 
-This engine targets binary (Yes/No) markets on **Polymarket** and **Kalshi**, implementing the **"Buy No Early"** strategy to capitalize on retail traders' tendency to overbet on sensational, low-probability "Yes" outcomes in newly-listed markets.
+## Quick Setup & Run Instructions
 
-**Core Insight:** Only ~22% of binary markets historically resolve to "Yes," yet emotional/sensational markets often see "Yes" prices spike to 70-85¢ in the first 20 minutes. This creates systematic mispricing opportunities.
+### Dependencies
+*   Python 3.8+
+*   `requests`
 
----
-
-## Key Features
-
-### 1. **Advanced Probability Estimation**
-- Bayesian inference using category-specific base rates
-- Sentiment analysis for sensationalism detection
-- Market categorization (crypto, politics, finance, etc.)
-- Confidence scoring based on liquidity and signals
-
-### 2. **Quantitative Risk Management**
-- **Kelly Criterion** for optimal position sizing
-- Expected Value (EV) calculation with transaction costs
-- Sharpe ratio analysis for risk-adjusted returns
-- Maximum drawdown and stop-loss constraints
-
-### 3. **Market Microstructure Analysis**
-- Order book spread monitoring
-- Liquidity depth assessment
-- Volume profile analysis
-- Age-based recency bias correction
-
-### 4. **Backtesting Framework**
-- Monte Carlo simulation support
-- Realistic transaction costs (2%) and slippage (1%)
-- Historical win-rate validation
-- Portfolio-level performance metrics
-
-### 5. **Production-Ready Architecture**
-- Rate limiting and retry logic
-- Modular design for easy extension
-- Comprehensive error handling
-- Both live and synthetic data support
-
----
-
-## Installation & Setup
-
-### Prerequisites
-- Python 3.8+
-- pip package manager
-
-### Install Dependencies
-
+### Installation
 ```bash
-pip install requests
+git clone https://github.com/punyamodi/binary_market_engine.git
+cd binary_market_engine
+pip install -r requirements.txt
 ```
 
-### Optional: API Keys
-
-- **Polymarket:** No authentication required for public data
-- **Kalshi:** API key required for real-time data (contact Kalshi Exchange)
-
-Add Kalshi API key in `run_demo.py`:
-```python
-KALSHI_API_KEY = "your_api_key_here"
-```
-
----
-
-## Quick Start
-
-### Run Main Demo
+### Running the Demo
 ```bash
 python run_demo.py
 ```
+This script fetches market data (synthetic by default), runs the strategy analysis, and outputs trading opportunities to the console and `demo_output.json`.
 
-This will:
-1. Fetch market data (synthetic by default)
-2. Analyze markets using quant strategies
-3. Display trading opportunities with detailed metrics
-4. Run backtest simulation
-5. Save results to `demo_output.json`
-
-### Run Deterministic Verification
+### Verifying Logic
 ```bash
 python reproduce_run.py
 ```
-
-This runs the strategy on fixed synthetic data to verify logic correctness.
-
----
-
-## Project Structure
-
-```
-binary_market_engine/
-├── config.py              # Configuration parameters
-├── fetch_data.py          # Data fetching with rate limiting
-├── strategy.py            # Quant strategy implementation
-├── backtest.py            # Backtesting engine
-├── run_demo.py            # Main demo script
-├── reproduce_run.py       # Deterministic verification
-├── README.md              # This file
-├── index.html             # Submission website
-└── demo_output.json       # Output results
-```
-
----
-
-## Strategy Details
-
-### "Buy No Early" Strategy
-
-**Thesis:** Newly-listed binary markets attract emotional traders who overbid on sensational "Yes" outcomes, creating temporary mispricing.
-
-**Execution:**
-1. **Monitor:** Scan for markets aged < 20 minutes
-2. **Filter:** Identify markets with Yes price > 70¢
-3. **Analyze:** Calculate true probability using:
-   - Historical base rates (22% Yes resolution)
-   - Category-specific adjustments
-   - Sentiment/sensationalism scoring
-4. **Size:** Apply Kelly Criterion with 25% safety factor
-5. **Execute:** Buy "No" position
-6. **Exit:** Sell when market normalizes (typically 1-3 days)
-
-### Example Winning Markets
-- *US Civil War in 2025?* (Yes: 78¢ → True: 5%)
-- *Gavin Newsom token launch?* (Yes: 85¢ → True: 3%)
-- *US-Venezuela military engagement?* (Yes: 72¢ → True: 8%)
-
----
-
-## Quantitative Metrics Explained
-
-### **Edge**
-```
-Edge = True No Probability - Market No Price
-```
-Represents how much the market undervalues "No"
-
-### **Expected Value (EV)**
-```
-EV = P(win) × Profit - P(loss) × Loss - Fees
-```
-Expected profit per dollar risked
-
-### **Kelly Criterion**
-```
-Kelly% = (Edge × Odds - 1) / (Odds - 1)
-Position Size = Kelly% × Capital × Safety Factor (0.25)
-```
-Optimal bet size to maximize long-term growth
-
-### **Sharpe Ratio**
-```
-Sharpe = (Expected Return - Risk Free Rate) / Volatility
-```
-Risk-adjusted return measure
-
----
+Runs the strategy on a fixed dataset to deterministically verify the logic.
 
 ## Sample Output
 
-```
+```text
 ┌─ Opportunity #1 ────────────────────────────────────────────────
 │ Platform: Polymarket
-│ Question: US Civil War in 2025?
-│
-│ Market Data:
-│   • Yes Price: $0.78
-│   • No Price:  $0.22
-│   • Volume:    $450,000
-│   • Age:       8 minutes
-│
-│ Quantitative Analysis:
-│   • True Yes Probability: 5.0%
-│   • True No Probability:  95.0%
-│   • Edge:                 73.0%
-│   • Expected Value:       68.34%
-│   • Confidence Score:     89.2%
-│
-│ Position Sizing:
-│   • Kelly Optimal:        12.45%
-│   • Recommended Size:     $311.25
-│   • Sharpe Ratio:         1.75
-│
-│ Signal: BUY_NO
-│ Risk/Reward: 3.11x
+│ Question: Will Gavin Newsom launch a cryptocurrency token in Q1 2025?
+│ Market Data: Yes: $0.85 | Age: 12m
+│ Analysis: True Yes: 18.0% | Edge: 67.0% | EV: 65.66%
+│ Signal: BUY_NO | Size: $1,000.00
 └─────────────────────────────────────────────────────────────────
 ```
 
----
-
-## Configuration
-
-All strategy parameters are in `config.py`:
-
-```python
-STRATEGY_CONFIG = {
-    "buy_no_early": {
-        "max_age_minutes": 20,        # Only markets < 20 min old
-        "min_yes_price": 0.70,        # Yes must be > 70¢
-        "min_volume": 10000,          # Minimum $10k volume
-        "min_liquidity": 5000,        # Minimum $5k liquidity
-        "max_spread": 0.10,           # Max 10% spread
-        "min_expected_return": 0.15,  # Min 15% EV
-        "confidence_threshold": 0.75, # 75% confidence required
-    },
-}
-```
-
-Adjust these to tune strategy aggressiveness.
-
----
-
 ## Design Decisions
 
-### 1. **Bayesian Probability Model**
-Uses category-specific base rates rather than market-implied probabilities. For example, crypto token launches have a 18% historical Yes rate vs. 22% overall.
+1.  **Bayesian Probability Model:** We use category-specific base rates (e.g., 22% historical "Yes" rate) as the prior, updating with a "sensationalism score" derived from keyword analysis to estimate the true probability of a "Yes" outcome.
+2.  **Fractional Kelly Criterion:** To manage risk in these high-variance markets, we utilize a fractional Kelly Criterion (25% of optimal) for position sizing.
+3.  **Mock Data First:** The system defaults to synthetic data to ensure the demo is immediately runnable and verifiable without requiring live API keys or handling rate limits during evaluation.
+4.  **Architecture:** The system is modularized into `fetch_data` (API abstraction), `strategy` (pure logic), and `backtest` (simulation) to separate concerns and facilitate testing.
 
-### 2. **Sentiment Scoring**
-Detects sensationalism using keyword analysis. Markets with words like "war," "collapse," "revolutionary" get probability adjustments.
+## Dependencies
 
-### 3. **Fractional Kelly**
-Uses 25% of full Kelly to reduce variance and drawdown risk, following best practices from professional traders.
-
-### 4. **Transaction Cost Modeling**
-Accounts for:
-- 2% platform fees (Polymarket/Kalshi average)
-- 1% slippage (conservative estimate)
-- Spread costs in position sizing
-
-### 5. **Modular Architecture**
-Separates data fetching, strategy logic, backtesting, and execution for:
-- Easy testing and validation
-- Platform extensibility (can add Manifold, Insight, etc.)
-- Parameter optimization
-
----
-
-## Performance Characteristics
-
-Based on backtesting with synthetic data matching historical patterns:
-
-- **Win Rate:** ~78% (matches historical 78% No resolution rate)
-- **Average Return per Trade:** ~15-25% on winning trades
-- **Profit Factor:** 2.5-3.5x (wins are 2.5-3.5x larger than losses)
-- **Max Drawdown:** ~15-20% (from peak)
-- **Sharpe Ratio:** 1.5-2.0 (excellent risk-adjusted returns)
-
-**Note:** Real performance depends on execution quality, market conditions, and actual vs. estimated probabilities.
-
----
+*   **Python Standard Library:** `json`, `datetime`, `math`, `random`, `typing`
+*   **External Packages:**
+    *   `requests`: For HTTP calls to Polymarket and Kalshi APIs.
 
 ## Known Limitations
 
-### Technical
-1. **API Rate Limits:** Polymarket Gamma API limits requests. Implemented retry logic.
-2. **Kalshi Authentication:** Real Kalshi data requires API key (not publicly available).
-3. **Market Age Calculation:** Relies on market start date; may be unreliable for some markets.
-
-### Strategy
-1. **No Execution:** This is an analysis engine, not a trading bot. Requires manual execution.
-2. **Market Impact:** Large positions may move prices, reducing edge.
-3. **Holding Period:** Strategy assumes ability to hold 1-3 days; early exits reduce returns.
-4. **Black Swans:** Truly unprecedented events may resolve to "Yes" despite low base rates.
-
-### Data
-1. **Historical Accuracy:** 22% Yes rate based on researcher claims; needs verification.
-2. **Category Classification:** Keyword-based categorization may misclassify complex markets.
-
----
-
-## Future Enhancements
-
-1. **Live Trading Integration:** Connect to exchange APIs for automated execution
-2. **Machine Learning:** Train models on historical resolution data
-3. **Order Book Analysis:** Deep analysis of bid-ask dynamics
-4. **Multi-Platform Arbitrage:** Cross-platform price discrepancies
-5. **Risk Dashboard:** Real-time portfolio monitoring
-6. **Historical Data Store:** Build proprietary market resolution database
-
----
-
-## Repository & Documentation
-
-- **GitHub:** [github.com/punyamodi/binary_market_engine](https://github.com/punyamodi/binary_market_engine)
-- **Submission Site:** See `index.html`
-
----
-
-## License
-
-MIT License - Free to use and modify
-
----
-
-## Contact
-
-For questions or collaboration:
-- **Email:** dankalu.work@gmail.com
-- **GitHub:** [@punyamodi](https://github.com/punyamodi)
-
----
-
-## Disclaimer
-
-This software is for educational and research purposes only. Trading binary markets involves substantial risk. Past performance does not guarantee future results. Always conduct your own due diligence and never risk more than you can afford to lose.
+*   **API Rate Limits:** The Polymarket Gamma API has strict rate limits; the current implementation uses basic backoff/retry logic which may be insufficient for high-frequency polling.
+*   **Kalshi Authentication:** Real-time Kalshi data requires a valid API key (not included); the engine falls back to synthetic data if no key is provided.
+*   **Execution:** This is an analysis engine only; it identifies opportunities but does not execute live trades on the exchange.
+*   **Market Age Accuracy:** "Age" is calculated from the market start date, which may not perfectly reflect when liquidity actually appeared.
