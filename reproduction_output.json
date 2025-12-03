@@ -1,0 +1,94 @@
+{
+  "timestamp": "2025-12-03T15:42:34.408966",
+  "test_type": "deterministic_reproduction",
+  "markets_analyzed": 8,
+  "opportunities_found": 2,
+  "min_expected_opportunities": 2,
+  "test_passed": true,
+  "opportunities": [
+    {
+      "signal": "BUY_NO",
+      "market": {
+        "platform": "Polymarket",
+        "id": "synthetic_1",
+        "question": "Will Gavin Newsom launch a cryptocurrency token in Q1 2025?",
+        "yes_price": 0.85,
+        "no_price": 0.15,
+        "volume": 120000,
+        "liquidity": 36000.0,
+        "spread": 0.02,
+        "age_minutes": 12,
+        "timestamp": "2025-12-03T15:42:34.402704",
+        "description": "Will Gavin Newsom launch a cryptocurrency token in Q1 2025?",
+        "end_date": "2026-03-03T15:42:34.402704"
+      },
+      "analytics": {
+        "true_yes_probability": 0.18,
+        "true_no_probability": 0.82,
+        "confidence": 0.6,
+        "expected_value": 0.6566,
+        "edge": 0.67,
+        "kelly_optimal_pct": 0.1971,
+        "recommended_position_usd": 1000,
+        "sharpe_ratio": 1.43,
+        "implied_volatility": 0.425
+      },
+      "reason": "Age: 12m | Yes: 0.85 | True Yes: 18.0% | Edge: 67.0% | EV: 65.7% | Conf: 60.0%",
+      "risk_reward": 4.38
+    },
+    {
+      "signal": "BUY_NO",
+      "market": {
+        "platform": "Kalshi",
+        "id": "synthetic_4",
+        "question": "Will Monad do an airdrop by February 2025?",
+        "yes_price": 0.76,
+        "no_price": 0.24,
+        "volume": 175000,
+        "liquidity": 52500.0,
+        "spread": 0.02,
+        "age_minutes": 18,
+        "timestamp": "2025-12-03T15:42:34.402704",
+        "description": "Will Monad do an airdrop by February 2025?",
+        "end_date": "2026-03-03T15:42:34.402704"
+      },
+      "analytics": {
+        "true_yes_probability": 0.18,
+        "true_no_probability": 0.82,
+        "confidence": 0.6,
+        "expected_value": 0.5684,
+        "edge": 0.58,
+        "kelly_optimal_pct": 0.1908,
+        "recommended_position_usd": 1000,
+        "sharpe_ratio": 1.36,
+        "implied_volatility": 0.38
+      },
+      "reason": "Age: 18m | Yes: 0.76 | True Yes: 18.0% | Edge: 58.0% | EV: 56.8% | Conf: 60.0%",
+      "risk_reward": 2.37
+    }
+  ],
+  "portfolio_metrics": {
+    "total_opportunities": 2,
+    "total_expected_value": 1.225,
+    "total_recommended_capital": 2000,
+    "average_confidence": 0.6,
+    "average_sharpe_ratio": 1.4,
+    "best_opportunity": "Will Gavin Newsom launch a cryptocurrency token in Q1 2025?"
+  },
+  "backtest_results": {
+    "total_trades": 2,
+    "winning_trades": 1,
+    "losing_trades": 1,
+    "win_rate": 0.5,
+    "total_profit": 2002.9,
+    "average_profit_per_trade": 1001.45,
+    "average_win": 3022.9,
+    "average_loss": -1020.0,
+    "profit_factor": 2.96,
+    "initial_capital": 10000,
+    "final_capital": 12002.9,
+    "total_return": 2002.9,
+    "roi_percent": 20.03,
+    "max_drawdown_percent": 10.2
+  }
+}
