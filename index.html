@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Market Strategies - Engine Submission</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --accent-color: #38bdf8;
+            --card-bg: #1e293b;
+            --success-color: #4ade80;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+
+        code {
+            background-color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            color: var(--success-color);
+        }
+
+        pre {
+            background-color: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Binary Market Strategies</h1>
+            <p>High-frequency inefficiency exploitation for Polymarket & Kalshi.</p>
+        </header>
+
+        <section>
+            <h2>Project Summary</h2>
+            <p>
+                This engine identifies pricing inefficiencies in binary markets, specifically targeting the
+                <strong>"Buy No Early"</strong> strategy. It monitors new market listings on Polymarket and Kalshi
+                to detect hype-driven overpricing of "Yes" outcomes, signaling entry points for high-probability mean
+                reversion trades.
+            </p>
+        </section>
+
+        <section>
+            <h2>Quick Start</h2>
+            <div class="card">
+                <p>1. Clone the repository:</p>
+                <pre><code>git clone https://github.com/punyamodi/binary_market_engine.git</code></pre>
+
+                <p>2. Install dependencies:</p>
+                <pre><code>pip install requests</code></pre>
+
+                <p>3. Run the demo:</p>
+                <pre><code>python run_demo.py</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>Sample Output</h2>
+            <div class="card">
+                <pre><code>============================================================
+Binary Market Strategy Engine - 'Buy No Early'
+Targeting: Polymarket & Kalshi
+============================================================
+
+[1] Fetching Market Data...
+    -> Found 4 active markets.
+
+[2] Analyzing Markets for Inefficiencies...
+    -> Found 3 opportunities.
+
+Opportunity #1:
+  Platform: Polymarket
+  Question: US Civil War in 2025?
+  Price: Yes $0.65 | No $0.35
+  Age: 10 minutes
+  Signal: BUY_NO
+  Reason: Market is young (10m) and Yes price is high (0.65) - Hype detected.
+----------------------------------------
+Opportunity #2:
+  Platform: Polymarket
+  Question: Will Gavin Newsom launch a token in September?
+  Price: Yes $0.80 | No $0.20
+  Age: 5 minutes
+  Signal: BUY_NO
+  Reason: Market is young (5m) and Yes price is high (0.80) - Hype detected.
+----------------------------------------
+Opportunity #3:
+  Platform: Kalshi
+  Question: Will OpenSea launch a token by October 31?
+  Price: Yes $0.75 | No $0.25
+  Age: 12 minutes
+  Signal: BUY_NO
+  Reason: Market is young (12m) and Yes price is high (0.75) - Hype detected.
+----------------------------------------</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>Links</h2>
+            <p>
+                <a href="https://github.com/punyamodi/binary_market_engine" class="btn">View Code Repository</a>
+            </p>
+        </section>
+    </div>
+</body>
+
+</html>
