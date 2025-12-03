@@ -1,0 +1,133 @@
+{
+  "timestamp": "2025-12-03T23:09:53.695761",
+  "final_equity": 10009.552712555853,
+  "roi": 0.09552712555852849,
+  "trades": [
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.465,
+      "quantity": 2150.537634408602,
+      "reason": "Age: 23m | Yes: 0.54 | True Yes: 18.0% | Edge: 35.5% | EV: 34.8% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.465,
+      "quantity": 2150.537634408602,
+      "reason": "Age: 23m | Yes: 0.54 | True Yes: 18.0% | Edge: 35.5% | EV: 34.8% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.47,
+      "quantity": 2127.6595744680853,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 35.0% | EV: 34.3% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "BUY",
+      "price": 0.475,
+      "quantity": 2105.263157894737,
+      "reason": "Age: 23m | Yes: 0.53 | True Yes: 18.0% | Edge: 34.5% | EV: 33.8% | Conf: 30.0%"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.46173651000521554,
+      "quantity": 2150.537634408602,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.4721716130055962,
+      "quantity": 2150.537634408602,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.45913615928822715,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.4739189587025677,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.4851324266111747,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.4720023450041738,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.46920816630914386,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.46761688055427475,
+      "quantity": 2127.6595744680853,
+      "reason": "End of Session"
+    },
+    {
+      "symbol": "Bitcoin price on December 10?",
+      "action": "SELL",
+      "price": 0.46845580634379036,
+      "quantity": 2105.263157894737,
+      "reason": "End of Session"
+    }
+  ]
+}

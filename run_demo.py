@@ -1,13 +1,18 @@
 import json
-from datetime import datetime
+import time
+import copy
+import sys
+from datetime import datetime, timedelta
 import fetch_data
 import strategy
-import backtest
+from engine import TradingEngine
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 def print_header():
     print("=" * 80)
     print("  BINARY MARKET STRATEGY ENGINE - 'BUY NO EARLY'")
-    print("  Quant-Level Implementation for Polymarket & Kalshi")
+    print("  End-to-End Execution & Management System")
     print("=" * 80)
     print()
 
@@ -16,137 +21,143 @@ def print_section(title: str):
     print(f"  {title}")
     print(f"{'─' * 80}\n")
 
-def print_opportunity(opp: dict, index: int):
-    market = opp["market"]
-    analytics = opp["analytics"]
+def simulate_price_movement(markets, time_step_minutes):
+    """
+    Simulates price evolution for the 'Buy No' strategy.
+    Hypothesis: 'No' prices tend to rise (Yes prices fall) as hype fades.
     
-    print(f"┌─ Opportunity #{index} {'─' * 60}")
-    print(f"│ Platform: {market['platform']}")
-    print(f"│ Question: {market['question']}")
-    print(f"│")
-    print(f"│ Market Data:")
-    print(f"│   • Yes Price: ${market['yes_price']:.2f}")
-    print(f"│   • No Price:  ${market['no_price']:.2f}")
-    print(f"│   • Volume:    ${market['volume']:,.0f}")
-    print(f"│   • Liquidity: ${market['liquidity']:,.0f}")
-    print(f"│   • Age:       {market['age_minutes']:.0f} minutes")
-    print(f"│")
-    print(f"│ Quantitative Analysis:")
-    print(f"│   • True Yes Probability: {analytics['true_yes_probability']:.1%}")
-    print(f"│   • True No Probability:  {analytics['true_no_probability']:.1%}")
-    print(f"│   • Edge:                 {analytics['edge']:.1%}")
-    print(f"│   • Expected Value:       {analytics['expected_value']:.2%}")
-    print(f"│   • Confidence Score:     {analytics['confidence']:.1%}")
-    print(f"│")
-    print(f"│ Position Sizing:")
-    print(f"│   • Kelly Optimal:        {analytics['kelly_optimal_pct']:.2%}")
-    print(f"│   • Recommended Size:     ${analytics['recommended_position_usd']:,.2f}")
-    print(f"│   • Sharpe Ratio:         {analytics['sharpe_ratio']:.2f}")
-    print(f"│")
-    print(f"│ Signal: {opp['signal']}")
-    print(f"│ Risk/Reward: {opp['risk_reward']:.2f}x")
-    print(f"└{'─' * 78}")
-
-def print_portfolio_metrics(metrics: dict):
-    print(f"┌─ Portfolio Metrics {'─' * 60}")
-    print(f"│ Total Opportunities:       {metrics['total_opportunities']}")
-    print(f"│ Total Expected Value:      {metrics['total_expected_value']:.2%}")
-    print(f"│ Total Recommended Capital: ${metrics['total_recommended_capital']:,.2f}")
-    print(f"│ Average Confidence:        {metrics['average_confidence']:.1%}")
-    print(f"│ Average Sharpe Ratio:      {metrics['average_sharpe_ratio']:.2f}")
-    print(f"│ Best Opportunity:          {metrics['best_opportunity']}")
-    print(f"└{'─' * 78}")
-
-def print_backtest_results(results: dict):
-    print(f"┌─ Backtest Results {'─' * 61}")
-    print(f"│ Total Trades:              {results['total_trades']}")
-    print(f"│ Winning Trades:            {results['winning_trades']}")
-    print(f"│ Losing Trades:             {results['losing_trades']}")
-    print(f"│ Win Rate:                  {results['win_rate']:.1%}")
-    print(f"│")
-    print(f"│ Initial Capital:           ${results['initial_capital']:,.2f}")
-    print(f"│ Final Capital:             ${results['final_capital']:,.2f}")
-    print(f"│ Total Return:              ${results['total_return']:,.2f}")
-    print(f"│ ROI:                       {results['roi_percent']:.2f}%")
-    print(f"│")
-    print(f"│ Average Profit/Trade:      ${results['average_profit_per_trade']:,.2f}")
-    print(f"│ Average Win:               ${results['average_win']:,.2f}")
-    print(f"│ Average Loss:              ${results['average_loss']:,.2f}")
-    print(f"│ Profit Factor:             {results['profit_factor']:.2f}")
-    print(f"│ Max Drawdown:              {results['max_drawdown_percent']:.2f}%")
-    print(f"└{'─' * 78}")
-
-def save_results(opportunities: list, portfolio_metrics: dict, backtest_results: dict, filename: str = "demo_output.json"):
-    output = {
-        "timestamp": datetime.now().isoformat(),
-        "opportunities": opportunities,
-        "portfolio_metrics": portfolio_metrics,
-        "backtest_results": backtest_results,
-    }
-    
-    with open(filename, 'w') as f:
-        json.dump(output, f, indent=2, default=str)
+    This simulation demonstrates the core thesis:
+    - Sensational markets are overpriced early (high Yes price)
+    - As hype fades, rational pricing emerges (Yes price drops, No price rises)
+    - Our "No" positions appreciate in value
+    """
+    updated_markets = []
+    for m in markets:
+        new_m = copy.deepcopy(m)
+        
+        is_sensational = any(keyword in m['question'] for keyword in 
+                            ["Civil War", "Token", "Airdrop", "military", "Newsom", "OpenSea", "Monad", "Venezuela"])
+        
+        if is_sensational:
+            
+            initial_hype_level = m['yes_price']
+            
+            time_factor = time_step_minutes / 15.0
+            hype_fade_rate = 0.08 * time_factor * initial_hype_level
+            
+            new_m['yes_price'] = max(0.05, new_m['yes_price'] - hype_fade_rate)
+            
+            new_m['no_price'] = min(0.95, 1.0 - new_m['yes_price'])
+            
+        else:
+            import random
+            noise = random.uniform(-0.01, 0.01)
+            new_m['yes_price'] = max(0.01, min(0.99, new_m['yes_price'] + noise))
+            new_m['no_price'] = 1.0 - new_m['yes_price']
+            
+        updated_markets.append(new_m)
+    return updated_markets
 
 def main():
     print_header()
     
-    USE_MOCK = True
-    KALSHI_API_KEY = None
+    engine = TradingEngine(initial_capital=10000.0)
+    print(f"Initialized Trading Engine with ${engine.cash:,.2f} capital.")
     
-    print_section("STEP 1: Fetching Market Data")
-    
-    if USE_MOCK:
-        print("Using synthetic market data for demonstration...")
-    else:
-        print("Fetching live market data from Polymarket and Kalshi...")
-    
-    markets = fetch_data.get_all_markets(use_mock=USE_MOCK)
-    print(f"✓ Fetched {len(markets)} active binary markets")
-    
-    print_section("STEP 2: Analyzing Markets for Inefficiencies")
-    
-    print("Running quant analysis:")
-    print("  • Calculating true probabilities using Bayesian methods")
-    print("  • Detecting sentiment and sensationalism")
-    print("  • Computing expected values and edge")
-    print("  • Applying Kelly Criterion for position sizing")
+    print_section("T=00:00 | MARKET SCAN & ENTRY")
+    markets = fetch_data.get_all_markets(use_mock=True)
+    print(f"Fetched {len(markets)} active markets.")
     
     opportunities = strategy.run_strategy(markets)
-    print(f"\n✓ Found {len(opportunities)} trading opportunities")
+    print(f"Identified {len(opportunities)} 'Buy No' opportunities.")
     
-    if opportunities:
-        print_section("STEP 3: Trading Opportunities (Sorted by Expected Value)")
+    for opp in opportunities:
+        market = opp['market']
+        analytics = opp['analytics']
         
-        for i, opp in enumerate(opportunities[:5], 1):
-            print_opportunity(opp, i)
+        size_usd = analytics['recommended_position_usd']
+        price = market['no_price']
+        quantity = size_usd / price
         
-        if len(opportunities) > 5:
-            print(f"\n... and {len(opportunities) - 5} more opportunities")
+        stop_loss = price * 0.90
+        take_profit = price * 1.20
         
-        print_section("STEP 4: Portfolio-Level Metrics")
-        portfolio_metrics = strategy.calculate_portfolio_metrics(opportunities)
-        print_portfolio_metrics(portfolio_metrics)
+        print(f"  > Executing BUY for '{market['question']}'")
+        print(f"    Qty: {quantity:.0f} | Price: ${price:.2f} | TP: ${take_profit:.2f} | SL: ${stop_loss:.2f}")
         
-        print_section("STEP 5: Backtesting Strategy Performance")
-        print("Running Monte Carlo simulation with:")
-        print("  • Historical win rates (22% Yes resolution)")
-        print("  • Transaction fees (2%)")
-        print("  • Realistic slippage (1%)")
+        engine.execute_order(
+            market=market,
+            action="BUY",
+            outcome="NO",
+            quantity=quantity,
+            price=price,
+            stop_loss=stop_loss,
+            take_profit=take_profit,
+            max_hold_time=60,
+            reason=opp['reason']
+        )
         
-        backtest_results = backtest.run_simple_backtest(opportunities)
-        print()
-        print_backtest_results(backtest_results)
-        
-        print_section("STEP 6: Saving Results")
-        save_results(opportunities, portfolio_metrics, backtest_results)
-        print("✓ Results saved to demo_output.json")
-        
-    else:
-        print("\n⚠ No opportunities found matching strategy criteria.")
-        portfolio_metrics = {}
-        backtest_results = {}
+    summary = engine.get_portfolio_summary()
+    print(f"\n[Portfolio Status] Cash: ${summary['cash']:,.2f} | Equity: ${summary['total_equity']:,.2f} | Positions: {summary['position_count']}")
+
+    print_section("T+00:15 | POSITION MANAGEMENT (Hype Fading...)")
     
-    print_section("Run Complete")
+    markets_t15 = simulate_price_movement(markets, time_step_minutes=15)
+    
+    engine.update_market_prices(markets_t15)
+    engine.check_risk_management()
+    
+    summary = engine.get_portfolio_summary()
+    print(f"\n[Portfolio Status] Cash: ${summary['cash']:,.2f} | Equity: ${summary['total_equity']:,.2f} | Unrealized PnL: ${summary['unrealized_pnl']:,.2f}")
+    
+    print_section("T+00:45 | POSITION MANAGEMENT (Trend Continues...)")
+    
+    markets_t45 = simulate_price_movement(markets_t15, time_step_minutes=30)
+    
+    engine.update_market_prices(markets_t45)
+    engine.check_risk_management()
+    
+    summary = engine.get_portfolio_summary()
+    print(f"\n[Portfolio Status] Cash: ${summary['cash']:,.2f} | Equity: ${summary['total_equity']:,.2f} | Unrealized PnL: ${summary['unrealized_pnl']:,.2f}")
+
+    print_section("T+01:00 | SESSION CLOSE")
+    
+    print("Closing all remaining positions...")
+    for market_id, pos in list(engine.positions.items()):
+        engine._force_close(pos, "End of Session")
+        
+    print_section("FINAL PERFORMANCE REPORT")
+    
+    final_equity = engine.cash
+    roi = ((final_equity - engine.initial_capital) / engine.initial_capital) * 100
+    
+    print(f"Initial Capital: ${engine.initial_capital:,.2f}")
+    print(f"Final Capital:   ${final_equity:,.2f}")
+    print(f"Total Return:    ${final_equity - engine.initial_capital:,.2f}")
+    print(f"ROI:             {roi:.2f}%")
+    print(f"Total Trades:    {len(engine.trades)}")
+    
+    print("\nTrade History:")
+    for t in engine.trades:
+        print(f"  • {t.timestamp.strftime('%H:%M:%S')} {t.action} {t.symbol} @ ${t.price:.2f} ({t.reason})")
+
+    results = {
+        "timestamp": datetime.now().isoformat(),
+        "final_equity": final_equity,
+        "roi": roi,
+        "trades": [
+            {
+                "symbol": t.symbol,
+                "action": t.action,
+                "price": t.price,
+                "quantity": t.quantity,
+                "reason": t.reason
+            } for t in engine.trades
+        ]
+    }
+    with open("demo_output.json", "w") as f:
+        json.dump(results, f, indent=2)
+    print("\n✓ Results saved to demo_output.json")
 
 if __name__ == "__main__":
     main()

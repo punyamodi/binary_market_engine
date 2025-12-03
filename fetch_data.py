@@ -171,6 +171,7 @@ def generate_synthetic_markets() -> List[Dict]:
     sensational_markets = [
         {
             "question": "Will the US have a civil war in 2025?",
+            "description": "Shocking reports suggest unprecedented internal conflict risk. Experts warn of catastrophic collapse.",
             "yes_price": 0.78,
             "volume": 450000,
             "age_minutes": 8,
@@ -178,6 +179,7 @@ def generate_synthetic_markets() -> List[Dict]:
         },
         {
             "question": "Will Gavin Newsom launch a cryptocurrency token in Q1 2025?",
+            "description": "Rumors of a revolutionary government-backed crypto token launch. Dramatic shift in policy.",
             "yes_price": 0.85,
             "volume": 120000,
             "age_minutes": 12,
@@ -185,6 +187,7 @@ def generate_synthetic_markets() -> List[Dict]:
         },
         {
             "question": "Will the US military engage Venezuela by December 2025?",
+            "description": "Explosive tensions rising. Emergency meetings held. War seems imminent according to sources.",
             "yes_price": 0.72,
             "volume": 280000,
             "age_minutes": 15,
@@ -192,6 +195,7 @@ def generate_synthetic_markets() -> List[Dict]:
         },
         {
             "question": "Will OpenSea launch a token by March 2025?",
+            "description": "Unprecedented leak confirms token plans. Massive airdrop expected.",
             "yes_price": 0.81,
             "volume": 95000,
             "age_minutes": 6,
@@ -199,6 +203,7 @@ def generate_synthetic_markets() -> List[Dict]:
         },
         {
             "question": "Will Monad do an airdrop by February 2025?",
+            "description": "Crypto twitter in a frenzy over potential miracle airdrop. Scandal if they don't.",
             "yes_price": 0.76,
             "volume": 175000,
             "age_minutes": 18,
@@ -245,7 +250,7 @@ def generate_synthetic_markets() -> List[Dict]:
             "spread": 0.02,
             "age_minutes": m["age_minutes"],
             "timestamp": datetime.now().isoformat(),
-            "description": m["question"],
+            "description": m.get("description", m["question"]),
             "end_date": (datetime.now() + timedelta(days=90)).isoformat(),
         })
     

@@ -98,40 +98,40 @@ class MarketAnalyzer:
     def analyze_market(self, market: Dict) -> Optional[Dict]:
         age = market.get('age_minutes')
         if age is None or age > self.strategy_config["max_age_minutes"]:
-            return None
-        
+                return None
+            
         yes_price = market.get('yes_price', 0.5)
         if yes_price < self.strategy_config["min_yes_price"]:
-            return None
-        
+                return None
+            
         volume = market.get('volume', 0)
         if volume < self.strategy_config["min_volume"]:
-            return None
-        
+                return None
+            
         liquidity = market.get('liquidity', 0)
         if liquidity < self.strategy_config["min_liquidity"]:
-            return None
-        
+                return None
+            
         spread = market.get('spread', 0)
         if spread > self.strategy_config["max_spread"]:
-            return None
-        
+                return None
+            
         true_yes_prob, confidence = self.calculate_true_probability(market)
-        
+            
         if confidence < self.strategy_config["confidence_threshold"]:
-            return None
-        
+                return None
+            
         expected_value = self.calculate_expected_value(market, true_yes_prob)
-        
+            
         if expected_value < self.strategy_config["min_expected_return"]:
-            return None
-        
+                return None
+            
         position_size = self.calculate_position_size(market, true_yes_prob)
         kelly_pct = self.calculate_kelly_criterion(market, true_yes_prob)
-        
+            
         implied_volatility = yes_price * 0.5
         sharpe_ratio = self.calculate_sharpe_ratio(expected_value, implied_volatility)
-        
+            
         market_implied_no_prob = market.get('no_price', 0.5)
         true_no_prob = 1 - true_yes_prob
         edge = true_no_prob - market_implied_no_prob
