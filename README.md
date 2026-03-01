@@ -1,291 +1,142 @@
-# Binary Market Strategies Engine
+# Binary Market Strategy Engine
 
-**Complete End-to-End Algorithmic Trading System for Polymarket & Kalshi**
+End-to-end algorithmic trading system for binary prediction markets (Polymarket and Kalshi).
 
----
+## Strategy
 
-## 📊 Project Summary
+**Buy No Early** exploits retail trader bias in newly launched prediction markets. Historically, only ~22% of sensational binary markets resolve as "Yes," yet early traders systematically overprice "Yes" outcomes in the first minutes after launch.
 
-This is a **complete trading system** that implements the "Buy No Early" strategy to exploit retail trader bias in binary prediction markets.
+The engine:
+1. Detects new markets within a configurable age window
+2. Scores pricing inefficiencies using Bayesian probability estimation
+3. Executes "Buy No" orders when edge and expected value thresholds are met
+4. Manages positions with stop-loss, take-profit, and time-based exits
+5. Produces detailed JSON performance reports
 
-**Core Insight:** Only 22% of sensational binary markets resolve as "Yes," yet retail traders systematically overprice "Yes" outcomes in the first few minutes after launch.
+## Architecture
 
-### What This System Does
+```
+fetch_data.py   ->  strategy.py  ->  engine.py
+   (data)          (signals)       (execution)
 
-✅ **Executes orders** - Places BUY/SELL orders with cash management  
-✅ **Manages positions** - Tracks portfolio state with real-time P&L  
-✅ **Enforces risk controls** - Stop-loss, take-profit, and time-based exits  
-✅ **Handles complete trade lifecycle** - From market detection to position closure  
+simulator.py  +  backtest.py  ->  main.py
+ (price sim)    (orchestration)  (CLI entry)
 
----
+config.py + models.py  (shared types)
+```
 
-## 🚀 Quick Start
+## Quick Start
 
-### Installation
 ```bash
 pip install -r requirements.txt
+python main.py
 ```
 
-### Run the Demo
+By default the engine runs on synthetic markets for reproducible demonstration.
+
+## CLI Options
+
+```
+python main.py --help
+
+Options:
+  --capital FLOAT       Initial capital in USD (default: 10000)
+  --live                Fetch live market data from Polymarket
+  --kalshi-key KEY      Kalshi API key for live Kalshi markets
+  --output FILE         JSON output path (default: results.json)
+  --seed INT            Random seed for simulation (default: 42)
+  --log-level LEVEL     DEBUG / INFO / WARNING / ERROR
+  --max-age FLOAT       Max market age in minutes for entry (default: 20)
+  --min-yes-price FLOAT Min Yes price threshold (default: 0.70)
+  --min-ev FLOAT        Min expected value for entry (default: 0.10)
+```
+
+### Live Data
+
+Polymarket is public and requires no key:
+
 ```bash
-python run_demo.py
+python main.py --live
 ```
 
-**Expected Output:**
-```
-Initial Capital: $10,000.00
-Final Capital:   $11,260.00
-ROI:             +12.60% ✅
-Total Trades:    10
+Kalshi requires an API key from https://kalshi.com:
+
+```bash
+python main.py --live --kalshi-key YOUR_KEY
 ```
 
----
-
-## 🔄 Using Real API Data
-
-**By default, the demo uses synthetic/mock data** for reproducibility. To use real market data:
-
-### Option 1: Polymarket Only (No API Key Needed)
-
-Edit `run_demo.py` line 68:
-```python
-markets = fetch_data.get_all_markets(use_mock=False)
-```
-
-Polymarket's API is public and doesn't require authentication.
-
-### Option 2: Polymarket + Kalshi (Requires Kalshi API Key)
-
-1. Get your Kalshi API key from: https://kalshi.com
-2. Edit `run_demo.py` line 68:
-```python
-markets = fetch_data.get_all_markets(use_mock=False, kalshi_api_key="YOUR_KALSHI_API_KEY")
-```
-
-### Why Mock Data is Default
-
-- ✅ **Reproducible** - Same results every time
-- ✅ **No setup needed** - Works immediately
-- ✅ **No API limits** - Won't hit rate limits
-- ✅ **Demonstrates strategy** - Shows the "Buy No Early" concept clearly
-
-**Note:** Real API data will show actual current markets, which may not always meet the strategy criteria (markets < 30 min old, Yes price > 70¢, etc.). The mock data is designed to demonstrate the strategy working optimally.
-
----
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│           Binary Market Trading System                  │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Data Layer → Strategy Layer → Execution → Risk Mgmt   │
-│                                                         │
-│  Polymarket ──┐                                         │
-│  Kalshi ──────┼──> Analyze ──> Execute ──> Monitor     │
-│  Synthetic ───┘     Markets    Orders      Positions   │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Core Components
-
-**1. Data Layer** (`fetch_data.py`)
-- Fetches live market data from Polymarket and Kalshi APIs
-- Normalizes data across platforms
-- Synthetic data fallback for reproducible demos
-
-**2. Strategy Layer** (`strategy.py`)
-- Bayesian probability estimation
-- Kelly Criterion position sizing
-- Multi-factor confidence scoring
-- Expected value calculation with fees
-
-**3. Execution Engine** (`engine.py`)
-- Order execution (BUY/SELL) with cash validation
-- Position tracking with entry prices
-- Cash management
-- Trade recording with timestamps
-
-**4. Risk Management** (`engine.py`)
-- **Stop-Loss:** Exits if price drops 10% below entry
-- **Take-Profit:** Exits if price rises 20% above entry
-- **Time-Based Exit:** Closes positions after 60 minutes
-- **Continuous Monitoring:** Checks all positions on every update
-
----
-
-## 📁 Project Structure
+## File Structure
 
 ```
 binary_market_engine/
-├── Core System (4 files)
-│   ├── engine.py              # Trading engine
-│   ├── strategy.py            # Strategy analyzer
-│   ├── fetch_data.py          # Data fetchers
-│   └── config.py              # Configuration
-│
-├── Demo (1 file)
-│   └── run_demo.py            # Full simulation
-│
-├── Documentation (2 files)
-│   ├── README.md              # This file
-│   └── index.html             # Submission website
-│
-├── Output (1 file - generated)
-│   └── demo_output.json       # Demo results
-│
-└── Config (2 files)
-    ├── requirements.txt       # Dependencies
-    └── .gitignore            # Exclusion rules
-
-Total: 10 essential files
+├── main.py          CLI entry point and orchestration
+├── backtest.py      Backtesting loop and performance reporting
+├── engine.py        Order execution, position tracking, risk controls
+├── strategy.py      Bayesian EV, Kelly criterion, signal generation
+├── simulator.py     Price evolution simulation for backtesting
+├── fetch_data.py    Polymarket and Kalshi data fetchers
+├── models.py        MarketData, Position, Trade, Signal dataclasses
+├── config.py        Typed configuration dataclasses and constants
+├── requirements.txt Python dependencies
+└── results.json     Generated output (after first run)
 ```
 
----
+## Strategy Parameters
 
-## 🎯 Strategy Details
+Edit via CLI flags or by modifying `config.py` defaults:
 
-### "Buy No Early" Strategy
+| Parameter | Default | Description |
+|---|---|---|
+| max_age_minutes | 20 | Maximum market age for entry |
+| min_yes_price | 0.70 | Minimum Yes price (overpricing threshold) |
+| min_expected_return | 0.10 | Minimum expected value |
+| confidence_threshold | 0.60 | Minimum confidence score |
+| kelly_fraction | 0.25 | Kelly safety multiplier |
+| max_position_usd | 1000 | Maximum position size |
+| stop_loss_pct | 0.10 | Stop-loss percentage below entry |
+| take_profit_pct | 0.20 | Take-profit percentage above entry |
+| max_hold_minutes | 60 | Maximum position hold time |
 
-**How It Works:**
+## Algorithms
 
-1. **Detect** new markets < 30 minutes old
-2. **Identify** sensational markets with high "Yes" prices (> 60¢)
-3. **Analyze** using Bayesian probability estimation
-4. **Execute** "Buy No" orders when edge > 10%
-5. **Manage** positions with stop-loss, take-profit, time exits
-6. **Exit** as hype fades and prices normalize
-
-### Entry Criteria
-- Market age < 30 minutes
-- "Yes" price > 60¢ (indicates overpricing)
-- Expected value > 5%
-- Confidence score > 60%
-
-### Position Sizing
-- Kelly Criterion with 25% safety factor
-- Min position: $100
-- Max position: $1,000
-
-### Exit Rules
-- **Stop-Loss:** -10% from entry price
-- **Take-Profit:** +20% from entry price
-- **Time Exit:** 60 minutes maximum hold
-
----
-
-## 📈 Performance Metrics
-
-### Demo Results
-- **Initial Capital:** $10,000.00
-- **Final Capital:** $11,185 - $11,260
-- **ROI:** +11.85% to +12.60%
-- **Win Rate:** 100%
-- **Take-Profit Triggers:** 4 out of 5 trades
-
-### Example Winning Trade
-```
-BUY  6,667 shares of "Will Gavin Newsom launch a token?" at $0.15
-SELL 6,667 shares at $0.22
-Reason: Take Profit Hit (+45% gain!)
-Profit: $453.33
-```
-
----
-
-## 🔧 Technical Implementation
-
-### Bayesian Probability Estimation
+**Bayesian Probability Estimation**
 
 ```
-P(Yes | Market) = Base_Rate × (1 - α × Sensationalism_Score)
-
-Where:
-- Base_Rate: Category-specific (crypto: 18%, politics: 25%)
-- α: Sensationalism adjustment factor (0.5)
-- Sensationalism_Score: 0-1 based on keyword detection
+P(Yes | Market) = BaseCategoryRate * (1 - 0.5 * SensationalismScore)
 ```
 
-### Kelly Criterion Position Sizing
+Sensationalism score is derived from keyword frequency. Confidence combines volume, sentiment, and category signals.
+
+**Kelly Criterion Position Sizing**
 
 ```
-Kelly% = (b × p - q) / b
+Kelly% = (b * p - q) / b
+where b = (1 - no_price) / no_price
+      p = true P(No)
+      q = 1 - p
 
-Where:
-- b = Odds = (1 - No_Price) / No_Price
-- p = True P(No)
-- q = 1 - p
-
-Position Size = Kelly% × Capital × Safety_Factor (0.25)
+Position = Kelly% * SafetyFactor * Capital
 ```
 
-### Expected Value Calculation
+**Expected Value**
 
 ```
-EV = P(win) × Profit - P(loss) × Loss - Fees
-
-For "No" position at price N:
-EV = True_P(No) × (1 - N) - True_P(Yes) × N - 0.02 × Trade_Value
+EV = P(No) * (1 - no_price) - P(Yes) * no_price
+EV_net = EV * (1 - transaction_fee)
 ```
 
----
+## Output
 
-## ⚙️ Configuration
+`results.json` contains:
+- Run timestamp and configuration snapshot
+- Performance metrics: ROI, win rate, Sharpe ratio, max drawdown
+- All signals with EV, edge, and confidence
+- Full trade log with realized PnL per trade
+- Portfolio equity snapshots at each simulation step
 
-Edit `config.py` to adjust parameters:
+## Limitations
 
-```python
-STRATEGY_CONFIG = {
-    "buy_no_early": {
-        "max_age_minutes": 30,
-        "min_yes_price": 0.60,
-        "min_expected_return": 0.05,
-        "confidence_threshold": 0.60,
-    },
-    "risk_management": {
-        "stop_loss_pct": 0.10,    # -10%
-        "take_profit_pct": 0.20,  # +20%
-        "max_hold_time_min": 60,  # 60 minutes
-    }
-}
-```
+- Order execution is simulated; real exchange integration requires additional API handling
+- Fill price assumes no slippage beyond the configured factor
+- Synthetic data demonstrates the strategy thesis; live markets may not always satisfy entry criteria
 
----
-
-## 🎯 Addressing Previous Feedback
-
-**Previous Feedback:** *"What you've provided is essentially just a data-ingestion engine. A complete system executes and manages orders — including stop-loss, take-profit, and possibly hold-time logic."*
-
-### How This Version Addresses It:
-
-✅ **Order Execution** - `engine.execute_order()` places BUY/SELL orders with cash validation  
-✅ **Position Management** - Real-time P&L calculation and portfolio tracking  
-✅ **Stop-Loss** - Automatically closes if price drops below threshold  
-✅ **Take-Profit** - Automatically closes if price rises above target  
-✅ **Hold-Time Logic** - Tracks time and closes after max hold period  
-✅ **Complete Trade Lifecycle** - Entry → Management → Exit  
-
----
-
-## ⚠️ Known Limitations
-
-- **Simulated Execution** - Orders are simulated; real exchange integration requires API keys
-- **Slippage** - Assumes fills at mid-market price
-- **Market Data** - Demo uses synthetic data for reproducibility
-- **Historical Validation** - Limited historical data available
-
----
-
-## ✨ Key Features
-
-1. **Complete System** - Full trade lifecycle, not just analysis
-2. **Multi-Platform** - Polymarket & Kalshi integration
-. **Quantitative Rigor** - Bayesian probability, Kelly Criterion
-5. **Risk Management** - Multi-layered exit logic
-6. **Clean Code** - Production-ready implementation
-
----
-
-**This is a complete, end-to-end algorithmic trading system ready for deployment.** ✨

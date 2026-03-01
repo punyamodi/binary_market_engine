@@ -1,34 +1,13 @@
+from dataclasses import dataclass, field
+from typing import Dict, List
+
+
 POLYMARKET_API_URL = "https://gamma-api.polymarket.com/events"
-POLYMARKET_ORDERBOOK_URL = "https://clob.polymarket.com/book"
 KALSHI_API_URL = "https://trading-api.kalshi.com/trade-api/v2"
 
-STRATEGY_CONFIG = {
-    "buy_no_early": {
-        "max_age_minutes": 20,
-        "min_yes_price": 0.70,
-        "min_volume": 1000,
-        "min_liquidity": 500,
-        "max_spread": 0.10,
-        "min_expected_return": 0.10,
-        "confidence_threshold": 0.60,
-    },
-    "position_sizing": {
-        "kelly_fraction": 0.25,
-        "max_position_size": 1000,
-        "min_position_size": 100,
-    },
-    "risk_management": {
-        "max_drawdown": 0.20,
-        "stop_loss": 0.15,
-        "take_profit": 0.30,
-        "max_concurrent_positions": 5,
-    }
-}
+HISTORICAL_YES_RATE: float = 0.22
 
-HISTORICAL_YES_RATE = 0.22
-HISTORICAL_NO_RATE = 0.78
-
-CATEGORY_YES_RATES = {
+CATEGORY_YES_RATES: Dict[str, float] = {
     "crypto": 0.18,
     "politics": 0.25,
     "sports": 0.48,
@@ -36,36 +15,88 @@ CATEGORY_YES_RATES = {
     "finance": 0.28,
     "entertainment": 0.20,
     "technology": 0.22,
-    "default": 0.22
+    "default": 0.22,
 }
 
-SENSATIONAL_KEYWORDS = [
+SENSATIONAL_KEYWORDS: List[str] = [
     "war", "collapse", "crisis", "crash", "revolutionary",
     "unprecedented", "shocking", "dramatic", "explosive",
-    "catastrophic", "miracle", "scandal", "emergency"
+    "catastrophic", "miracle", "scandal", "emergency",
 ]
 
-CRYPTO_KEYWORDS = [
+CRYPTO_KEYWORDS: List[str] = [
     "bitcoin", "ethereum", "crypto", "token", "nft", "defi",
-    "blockchain", "coin", "web3", "airdrop", "launch"
+    "blockchain", "coin", "web3", "airdrop", "launch",
 ]
 
-POLITICS_KEYWORDS = [
+POLITICS_KEYWORDS: List[str] = [
     "president", "election", "congress", "senate", "vote",
-    "policy", "governor", "politician", "impeach", "resign"
+    "policy", "governor", "politician", "impeach", "resign",
 ]
 
-BACKTEST_CONFIG = {
-    "initial_capital": 10000,
-    "transaction_fee": 0.02,
-    "slippage": 0.01,
-    "min_hold_minutes": 60,
-    "max_hold_minutes": 4320,
-}
+SPORTS_KEYWORDS: List[str] = [
+    "nba", "nfl", "mlb", "nhl", "fifa", "championship", "league",
+    "win", "score", "match", "game", "tournament", "playoff",
+]
 
-FETCH_CONFIG = {
-    "timeout": 10,
-    "retry_attempts": 3,
-    "retry_delay": 2,
-    "rate_limit_delay": 1,
-}
+WEATHER_KEYWORDS: List[str] = [
+    "rain", "snow", "hurricane", "tornado", "flood", "temperature",
+    "celsius", "fahrenheit", "weather", "storm", "drought",
+]
+
+
+@dataclass
+class StrategyConfig:
+    max_age_minutes: float = 20.0
+    min_yes_price: float = 0.70
+    min_volume: float = 1000.0
+    min_liquidity: float = 500.0
+    max_spread: float = 0.10
+    min_expected_return: float = 0.10
+    confidence_threshold: float = 0.60
+    sensationalism_adjustment: float = 0.5
+
+
+@dataclass
+class PositionSizingConfig:
+    kelly_fraction: float = 0.25
+    max_position_usd: float = 1000.0
+    min_position_usd: float = 100.0
+
+
+@dataclass
+class RiskConfig:
+    stop_loss_pct: float = 0.10
+    take_profit_pct: float = 0.20
+    max_hold_minutes: int = 60
+    max_concurrent_positions: int = 5
+    max_portfolio_drawdown: float = 0.20
+
+
+@dataclass
+class BacktestConfig:
+    initial_capital: float = 10000.0
+    transaction_fee: float = 0.02
+    slippage: float = 0.005
+
+
+@dataclass
+class FetchConfig:
+    timeout: int = 10
+    retry_attempts: int = 3
+    retry_delay: float = 2.0
+    rate_limit_delay: float = 1.0
+
+
+@dataclass
+class AppConfig:
+    strategy: StrategyConfig = field(default_factory=StrategyConfig)
+    position_sizing: PositionSizingConfig = field(default_factory=PositionSizingConfig)
+    risk: RiskConfig = field(default_factory=RiskConfig)
+    backtest: BacktestConfig = field(default_factory=BacktestConfig)
+    fetch: FetchConfig = field(default_factory=FetchConfig)
+
+
+def default_config() -> AppConfig:
+    return AppConfig()
+
